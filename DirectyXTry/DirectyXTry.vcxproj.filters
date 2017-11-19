@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Texture">
       <UniqueIdentifier>{77fc02d5-2fcd-4037-b1df-aa626fd297cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Light">
+      <UniqueIdentifier>{c6221a1f-fb5a-4b78-8cfb-4edab96783bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -52,6 +55,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -89,6 +98,12 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LightShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectyXTry.rc">
@@ -121,6 +136,12 @@
     </None>
     <None Include="texture.ps">
       <Filter>Source Files\Texture</Filter>
+    </None>
+    <None Include="light.vs">
+      <Filter>Source Files\Light</Filter>
+    </None>
+    <None Include="light.ps">
+      <Filter>Source Files\Light</Filter>
     </None>
   </ItemGroup>
 </Project>

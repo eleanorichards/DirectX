@@ -2,8 +2,6 @@
 #ifndef _MODELCLASS_H_
 #define _MODELCLASS_H_
 
-
-
 // INCLUDES //
 #include <d3d11.h>
 #include <directxmath.h>
@@ -21,6 +19,7 @@ private:
 		XMFLOAT3 position;
 		XMFLOAT4 color;		
 		XMFLOAT3 normal;
+		XMFLOAT2 texture;
 	};
 
 	struct ModelType
@@ -34,7 +33,7 @@ public:
 	Models();
 	Models(const Models&);
 	~Models();
-	bool Initialise(ID3D11Device*, ID3D11DeviceContext*, char*);
+	bool Initialise(ID3D11Device*, ID3D11DeviceContext*, char *, char*);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
@@ -42,16 +41,19 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 private:
-	bool InitializeBuffers(ID3D11Device*);
+	bool InitialiseBuffers(ID3D11Device*);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
-	bool LoadTexture(ID3D11Device*, ID3D11DeviceContext*, char*);
+	bool LoadTexture(ID3D11Device*, ID3D11DeviceContext *deviceContext,  char*);
 	void ReleaseTexture();
+	bool LoadModel(char*);
+	void ReleaseModel();
 
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;
-	//Texture* m_Texture;
+	Texture* m_Texture;
+	ModelType* m_model;
 };
 
 #endif

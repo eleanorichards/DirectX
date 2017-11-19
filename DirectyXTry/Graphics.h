@@ -4,8 +4,10 @@
 #include "d3dclass.h"
 #include "camera.h"
 #include "models.h"
-#include "ColourShader.h"
-//#include "TextureShader.h"
+//#include "ColourShader.h"
+#include "TextureShader.h"
+#include "LightShader.h"
+#include "Light.h"
 
 // GLOBALS //
 const bool FULL_SCREEN = false;
@@ -25,14 +27,16 @@ public:
 	bool Frame();
 
 private:
-	bool Render();
+	bool Render(float);
 
 private:
 	D3DClass* m_Direct3D;
 	Camera* m_Camera;
 	Models* m_Model;
-	ColourShader* m_ColourShader;
-	//TextureShaderClass* m_TextureShader;
+	//ColourShader* m_ColourShader;
+	TextureShader* m_TextureShader;
+	LightShader* m_LightShader;
+	Light* m_Light;
 
 };
 
