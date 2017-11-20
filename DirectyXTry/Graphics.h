@@ -25,6 +25,9 @@ public:
 	bool Initialise(int, int, HWND);
 	void Shutdown();
 	bool Frame();
+	void MoveObject(string direction);
+	void RotateCamera(float x, float y, float z);
+	void MoveCamera(float x, float y, float z);
 
 private:
 	bool Render(float);

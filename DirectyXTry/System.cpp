@@ -149,6 +149,7 @@ bool SystemClass::Frame()
 	{
 		return false;
 	}
+	takeInput();
 
 	//frame proccessing for grgraphics object
 	result = m_Graphics->Frame();
@@ -264,6 +265,31 @@ void SystemClass::ShutdownWindows()
 	ApplicationHandle = NULL;
 
 	return;
+}
+
+void SystemClass::takeInput()
+{
+	if(m_Input->isKeyDown(VK_LEFT))
+	{
+		//SETsTATE.LEFT
+		m_Graphics->MoveCamera(-0.1f,0,0);
+		return ;
+	}
+	if (m_Input->isKeyDown(VK_RIGHT))
+	{
+		m_Graphics->MoveCamera(0.1f, 0, 0);
+		return;
+	}
+	if (m_Input->isKeyDown(VK_UP))
+	{
+		m_Graphics->MoveCamera(0, 0.1f, 0);
+		return;
+	}
+	if (m_Input->isKeyDown(VK_DOWN))
+	{
+		m_Graphics->MoveCamera(0, -0.1f, 0);
+		return;
+	}
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)

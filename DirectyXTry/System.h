@@ -33,6 +33,7 @@ private:
 	bool Frame();
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
+	void takeInput();
 
 private:
 	LPCWSTR m_applicationName;

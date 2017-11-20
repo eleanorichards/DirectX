@@ -317,6 +317,7 @@ bool LightShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATR
 		XMFLOAT4 diffuseColor)
 	{
 		HRESULT result;
+		
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		unsigned int bufferNumber;
 		MatrixBufferType* dataPtr;
@@ -328,6 +329,7 @@ bool LightShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATR
 		XMMatrixTranspose(viewMatrix);
 		XMMatrixTranspose(projectionMatrix);
 
+		//ERROR POINT FOR LIGHTING
 		// Lock the constant buffer so it can be written to.
 		result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))

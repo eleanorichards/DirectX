@@ -192,7 +192,7 @@ bool Graphics::Frame()
 
 
 	// Update the rotation variable each frame
-	rotation += 1.1f * ((float)XM_PI / 180.0f);
+	rotation += 0.5f * ((float)XM_PI / 180.0f);
 	if (rotation > 360.0f)
 	{
 		rotation -= 360.0f;
@@ -206,6 +206,33 @@ bool Graphics::Frame()
 		return false;
 	}
 	return true;
+}
+
+void Graphics::MoveObject(string direction)
+{
+	/*switch ()
+	{
+	case :
+		
+	default:
+		break;
+	}*/
+}
+
+void Graphics::RotateCamera(float x, float y, float z)
+{
+}
+
+void Graphics::MoveCamera(float x, float y, float z)
+{
+
+	//XMFLOAT3 cam_position = m_Camera->GetPosition;
+	XMFLOAT3 new_Pos = m_Camera->GetPosition();
+	new_Pos.x += x;
+	new_Pos.y += y;
+	new_Pos.z += z;
+
+	m_Camera->SetPosition(new_Pos.x, new_Pos.y, new_Pos.z);
 }
 
 bool Graphics::Render(float rotation)
