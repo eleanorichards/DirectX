@@ -31,7 +31,7 @@ public:
 
 private:
 	bool Render(float);
-
+	float rotation_speed = 0.1f;
 private:
 	D3DClass* m_Direct3D;
 	Camera* m_Camera;

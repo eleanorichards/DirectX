@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Graphics.h"
+#include "AntTweakBar.h"
 
 Graphics::Graphics()
 {
@@ -11,6 +12,8 @@ Graphics::Graphics()
 	m_Light = 0;
 	//COLOURSHADER
 	//m_ColourShader = 0;
+	
+
 }
 
 Graphics::Graphics(const Graphics &)
@@ -96,32 +99,45 @@ bool Graphics::Initialise(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	//AntTweakBar Initialisation
+	TwInit(TW_DIRECT3D11, m_Direct3D->GetDevice());
+	TwWindowSize(screenWidth, screenWidth);
+
+	//create antTweakbars
+	TwBar* bTweakBar;
+	bTweakBar = TwNewBar("Model Info");
+	TwAddVarRW(bTweakBar, "Rotation Speed", TW_TYPE_FLOAT, &rotation_speed, "min=0 max=10 step=0.1");
+	TwAddVarRW(bTweakBar, "Rotation Speed2", TW_TYPE_FLOAT, &rotation_speed, "keyIncr=i keyDecr=p");
+	
+
+	//LIGHT STUFF
+
 	// Create the light shader object.
-	m_LightShader = new LightShader;
-	if (!m_LightShader)
-	{
-		return false;
-	}
+	//m_LightShader = new LightShader;
+	//if (!m_LightShader)
+	//{
+	//	return false;
+	//}
 
-	// Initialize the light shader object.
-	//result = m_LightShader->Initialise(m_Direct3D->GetDevice(), hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
-		return false;
-	}
+	//// Initialize the light shader object.
+	////result = m_LightShader->Initialise(m_Direct3D->GetDevice(), hwnd);
+	//if (!result)
+	//{
+	//	MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+	//	return false;
+	//}
 
-	// Create the light object.
-	m_Light = new Light;
-	if (!m_Light)
-	{
-		return false;
-	}
+	//// Create the light object.
+	//m_Light = new Light;
+	//if (!m_Light)
+	//{
+	//	return false;
+	//}
 
-	// Initialize the light object.
-	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(1.0f, 0.0f, 0.0f);
+	//// Initialize the light object.
+	//m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	//m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//m_Light->SetDirection(1.0f, 0.0f, 0.0f);
 
 
 	return true;
@@ -137,6 +153,9 @@ void Graphics::Shutdown()
 		delete m_ColourShader;
 		m_ColourShader = 0;
 	}*/
+
+	//Release Anttweak bar
+	TwTerminate();
 
 	// Release the light object.
 	if (m_Light)
@@ -188,11 +207,11 @@ void Graphics::Shutdown()
 bool Graphics::Frame()
 {
 	bool result;
+
 	static float rotation = 0.0f;
 
-
 	// Update the rotation variable each frame
-	rotation += 0.5f * ((float)XM_PI / 180.0f);
+	rotation += rotation_speed * ((float)XM_PI / 180.0f);
 	if (rotation > 360.0f)
 	{
 		rotation -= 360.0f;
@@ -252,9 +271,11 @@ bool Graphics::Render(float rotation)
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
-	// Rotate the world matrix by the rotation value so that the triangle will spin.
-	
+	// Rotate the world matrix by the rotation value so that the triangle will spin.	
 	worldMatrix = XMMatrixRotationY(rotation);
+	
+	//Draw AntTweakBar
+	TwDraw();
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_Model->Render(m_Direct3D->GetDeviceContext());
@@ -277,12 +298,11 @@ bool Graphics::Render(float rotation)
 
 
 	// Render the model using the texture shader.
-	result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
+	result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetVertexCount(), m_Model->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
 	if (!result)
 	{
 		return false;
 	}
-
 
 	// Present the rendered scene to the screen.
 	m_Direct3D->EndScene();

@@ -84,7 +84,6 @@ bool LightShader::InitialiseShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer = 0;
 	// Compile the vertex shader code.
-	//TROUBLE POINT
 	result = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "LightVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
 		&vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
@@ -102,6 +101,7 @@ bool LightShader::InitialiseShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 
 		return false;
 	}
+	 //TROUBLE POINT
 	// Compile the pixel shader code.
 	result = D3DCompileFromFile(psFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "LightPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
 		&pixelShaderBuffer, &errorMessage);

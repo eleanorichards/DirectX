@@ -1,10 +1,14 @@
 #include "stdafx.h"
 #include "System.h"
+#include "AntTweakBar.h"
 
 SystemClass::SystemClass()
 {
 	m_Input = 0;
 	m_Graphics = 0;
+	float modelRotSpeed = 0.1f;
+	
+
 }
 
 SystemClass::SystemClass(const SystemClass &)
@@ -117,6 +121,8 @@ LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM 
 {
 	switch (umsg)
 	{
+		
+
 		// Check if a key has been pressed on the keyboard.
 		case WM_KEYDOWN:
 		{
@@ -237,7 +243,7 @@ void SystemClass::InitializeWindows(int &screenWidth, int &screenHeight)
 	SetFocus(m_hwnd);
 
 	// Hide the mouse cursor.
-	ShowCursor(false);
+	//ShowCursor(false);
 
 	return;
 }
@@ -294,6 +300,10 @@ void SystemClass::takeInput()
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
+	if (TwEventWin(hwnd, umessage, wparam, lparam)) // send event message to AntTweakBar
+		return 0; // event has been handled by AntTweakBar
+					// else process the event message
+					// ...
 	switch (umessage)
 	{
 		// Check if the window is being destroyed.
