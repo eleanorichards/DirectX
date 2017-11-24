@@ -1,4 +1,7 @@
 #include "Models.h"
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
 
 Models::Models()
 {
@@ -125,6 +128,51 @@ bool Models::InitialiseBuffers(ID3D11Device *device)
 	//indices[0] = 0;  // Bottom left.
 	//indices[1] = 1;  // Top middle.
 	//indices[2] = 2;  // Bottom right.*/
+	////
+	/*
+	Assimp::Importer importer;
+
+
+
+	const aiScene * scene = importer.ReadFile("untitled.obj", aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+	std::vector<Vertex::Basic32> vertices(8);
+	Assimp::Importer importer;
+
+
+
+	const aiScene * scene = importer.ReadFile("untitled.obj", aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+
+	aiMesh *mesh = scene->mMeshes[0];
+
+	for (int i = 0; i<8; i++)
+	{
+
+		{
+
+			aiVector3D pos = mesh->mVertices[i];
+
+			vertices[i].Pos.x = pos.x;
+			vertices[i].Pos.y = pos.y;
+			vertices[i].Pos.z = pos.z;
+		}
+
+
+	}
+	vector<UINT> indices;
+	
+	for (int i = 0; i < mesh->mNumFaces; i++) {
+		const aiFace& Face = mesh->mFaces[i];
+		if (Face.mNumIndices == 3) {
+			indices.push_back(Face.mIndices[0]);
+			indices.push_back(Face.mIndices[1]);
+			indices.push_back(Face.mIndices[2]);
+
+		}
+
+	}
+	///
+	*/
+
 
 	// Load the vertex array and index array with data.
 	for (int i = 0; i< m_vertexCount; i++)
@@ -340,11 +388,35 @@ bool Models::LoadModel(char* filename)
 	}
 
 	// Read in the vertex count.
+	//for loading in ASSMIP you will want some way to do this
 	fin >> m_vertexCount;
 
-	//// Set the number of indices to be the same as the vertex count.
-	//m_indexCount = m_vertexCount;
+	/*
+	
+	ASSMIP STUFF
+	
+	Assimp::Importer importer;
 
+
+
+    const aiScene * scene = importer.ReadFile("untitled.obj", aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+
+	aiMesh *mesh = scene->mMeshes[0]; 
+
+	for (i = 0; i<m_vertexCount; i++)
+	{
+
+	{
+
+	aiVector3D pos = m_model->mVertices[i];
+
+	vertices[i].Pos.x    =  pos.x;
+	vertices[i].Pos.y    =  pos.y;
+	vertices[i].Pos.z    =  pos.z;
+	}
+	
+
+	*/
 	// Create the model using the vertex count that was read in.
 	m_model = new ModelType[m_vertexCount];
 	if (!m_model)
@@ -352,25 +424,26 @@ bool Models::LoadModel(char* filename)
 		return false;
 	}
 
+	///TEXT FILE READING
 	// Read up to the beginning of the data.
-	fin.get(input);
-	while (input != ':')
-	{
-		fin.get(input);
-	}
-	fin.get(input);
-	fin.get(input);
+	//fin.get(input);
+	//while (input != ':')
+	//{
+	//	fin.get(input);
+	//}
+	//fin.get(input);
+	//fin.get(input);
 
-	// Read in the vertex data.
-	for (i = 0; i<m_vertexCount; i++)
-	{
-		fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
-		fin >> m_model[i].tu >> m_model[i].tv;
-		fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
-	}
+	//// Read in the vertex data.
+	//for (i = 0; i<m_vertexCount; i++)
+	//{
+	//	fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
+	//	fin >> m_model[i].tu >> m_model[i].tv;
+	//	fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
+	//}
 
-	// Close the model file.
-	fin.close();
+	//// Close the model file.
+	//fin.close();
 
 	return true;
 }
