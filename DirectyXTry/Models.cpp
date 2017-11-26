@@ -1,12 +1,11 @@
 #include "Models.h"
-#include <assimp/Importer.hpp>      // C++ importer interface
-#include <assimp/scene.h>           // Output data structure
-#include <assimp/postprocess.h>     // Post processing flags
+
 
 Models::Models()
 {
 	m_vertexBuffer = 0;
 	m_instanceBuffer = 0;
+	m_indexBuffer = 0;
 	m_Texture = 0;
 	m_model = 0;
 }
@@ -78,6 +77,11 @@ int Models::GetInstanceCount()
 	return m_instanceCount;
 }
 
+int Models::GetIndexCount()
+{
+	return m_indexCount;
+}
+
 ID3D11ShaderResourceView * Models::GetTexture()
 {
 	return m_Texture->GetTexture();
@@ -87,24 +91,25 @@ bool Models::InitialiseBuffers(ID3D11Device *device)
 {
 	VertexType* vertices;
 	InstanceType* instances;
-	D3D11_BUFFER_DESC vertexBufferDesc, instanceBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData, instanceData;
+	unsigned long* indices;
+	D3D11_BUFFER_DESC vertexBufferDesc, instanceBufferDesc, indexBufferDesc;
+	D3D11_SUBRESOURCE_DATA vertexData, instanceData, indexData;
 	HRESULT result;
 
+	aiMesh *mesh = scene->mMeshes[0];	
 	// Set the number of vertices in the vertex array.
-	//m_vertexCount = 3;
-
-	// Set the number of indices in the index array.
-	//m_indexCount = 3;
-
+	m_vertexCount = mesh->mNumVertices;
 	// Create the vertex array.
 	vertices = new VertexType[m_vertexCount];
 	if (!vertices)
 	{
 		return false;
 	}
-
-	// Create the index array.
+	indices = new unsigned long[m_indexCount];
+	if (!indices)
+	{
+		return false;
+	}
 
 	/*//// Load the vertex array with data.
 	//vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
@@ -129,63 +134,38 @@ bool Models::InitialiseBuffers(ID3D11Device *device)
 	//indices[1] = 1;  // Top middle.
 	//indices[2] = 2;  // Bottom right.*/
 	////
-	/*
-	Assimp::Importer importer;
-
-
-
-	const aiScene * scene = importer.ReadFile("untitled.obj", aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
-	std::vector<Vertex::Basic32> vertices(8);
-	Assimp::Importer importer;
-
-
-
-	const aiScene * scene = importer.ReadFile("untitled.obj", aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
-
-	aiMesh *mesh = scene->mMeshes[0];
-
-	for (int i = 0; i<8; i++)
+		
+	//Assimp working reading in vertices
+	for (int i = 0; i < mesh->mNumFaces; i++)
 	{
-
 		{
-
 			aiVector3D pos = mesh->mVertices[i];
+			vertices[i].position.x = pos.x;
+			vertices[i].position.y = pos.y;
+			vertices[i].position.z = pos.z;			
+			aiVector3D norms = mesh->mNormals[i];
+			vertices[i].normal.x = norms.x;
+			vertices[i].normal.y = norms.y;
+			vertices[i].normal.z = norms.z;
+			//unsigned int uvs = mesh->mNumUVComponents[i];
 
-			vertices[i].Pos.x = pos.x;
-			vertices[i].Pos.y = pos.y;
-			vertices[i].Pos.z = pos.z;
-		}
-
-
-	}
-	vector<UINT> indices;
-	
-	for (int i = 0; i < mesh->mNumFaces; i++) {
-		const aiFace& Face = mesh->mFaces[i];
-		if (Face.mNumIndices == 3) {
-			indices.push_back(Face.mIndices[0]);
-			indices.push_back(Face.mIndices[1]);
-			indices.push_back(Face.mIndices[2]);
+			const aiFace& Face = mesh->mFaces[i];
+			if (Face.mNumIndices == 3)
+			{
+				m_indexCount += 3;
+			}
 
 		}
-
 	}
-	///
-	*/
-
 
 	// Load the vertex array and index array with data.
-	for (int i = 0; i< m_vertexCount; i++)
-	{
-		vertices[i].position = XMFLOAT3(m_model[i].x, m_model[i].y, m_model[i].z);
-		vertices[i].texture = XMFLOAT2(m_model[i].tu, m_model[i].tv);
-		vertices[i].normal = XMFLOAT3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
+	//for (int i = 0; i< m_vertexCount; i++)
+	//{
+	//	vertices[i].position = XMFLOAT3(m_model[i].x, m_model[i].y, m_model[i].z);
+	//	vertices[i].texture = XMFLOAT2(m_model[i].tu, m_model[i].tv);
+	//	vertices[i].normal = XMFLOAT3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
 
-		//indices[i] = i;
-	}
-
-
-					 // Set up the description of the static vertex buffer.
+	// Set up the description of the static vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -206,30 +186,31 @@ bool Models::InitialiseBuffers(ID3D11Device *device)
 	}
 
 	// Set up the description of the static index buffer.
-	//indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	//indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount;
-	//indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	//indexBufferDesc.CPUAccessFlags = 0;
-	//indexBufferDesc.MiscFlags = 0;
-	//indexBufferDesc.StructureByteStride = 0;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+	indexBufferDesc.StructureByteStride = 0;
 
-	//// Give the subresource structure a pointer to the index data.
-	//indexData.pSysMem = indices;
-	//indexData.SysMemPitch = 0;
-	//indexData.SysMemSlicePitch = 0;
+	// Give the subresource structure a pointer to the index data.
+	indexData.pSysMem = indices;
+	indexData.SysMemPitch = 0;
+	indexData.SysMemSlicePitch = 0;
 
-	//// Create the index buffer.
-	//result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
-	//if (FAILED(result))
-	//{
-	//	return false;
-	//}
+	// Create the index buffer.
+	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
 	delete[] vertices;
 	vertices = 0;
 
-	/*delete[] indices;
-	indices = 0;*/
+	delete[] indices;
+	indices = 0;
 
 	//INSTANCING
 	// Set the number of instances in the array.
@@ -278,12 +259,12 @@ bool Models::InitialiseBuffers(ID3D11Device *device)
 void Models::ShutdownBuffers()
 {
 	// Release the index buffer.
-	/*if (m_indexBuffer)
+	if (m_indexBuffer)
 	{
 		m_indexBuffer->Release();
 		m_indexBuffer = 0;
 	}
-*/
+
 	// Release the vertex buffer.
 	if (m_vertexBuffer)
 	{
@@ -303,21 +284,26 @@ void Models::ShutdownBuffers()
 
 void Models::RenderBuffers(ID3D11DeviceContext *deviceContext)
 {
-	unsigned int strides[2];
-	unsigned int offsets[2];
-	ID3D11Buffer* bufferPointers[2];
+	unsigned int strides[3];
+	unsigned int offsets[3];
+	ID3D11Buffer* bufferPointers[3];
 
 	// Set the buffer strides.
 	strides[0] = sizeof(VertexType);
 	strides[1] = sizeof(InstanceType);
+	strides[2] = sizeof(IndexType);
+
 
 	// Set the buffer offsets.
 	offsets[0] = 0;
 	offsets[1] = 0;
+	offsets[2] = 0;
+
 
 	// Set the array of pointers to the vertex and instance buffers.
 	bufferPointers[0] = m_vertexBuffer;
 	bufferPointers[1] = m_instanceBuffer;
+	bufferPointers[2] = m_indexBuffer;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetVertexBuffers(0, 2, bufferPointers, strides, offsets);
@@ -366,57 +352,42 @@ void Models::ReleaseTexture()
 
 bool Models::LoadModel(char* filename)
 {
-	ifstream fin;
+	/*ifstream fin;
 	char input;
-	int i;
+	int i;*/
 
 
 	// Open the model file.
-	fin.open(filename);
+	//fin.open(filename);
 
 	// If it could not open the file then exit.
-	if (fin.fail())
+	/*if (fin.fail())
 	{
 		return false;
-	}
+	}*/
 
-	// Read up to the value of vertex count.
-	fin.get(input);
-	while (input != ':')
-	{
-		fin.get(input);
-	}
+	//// Read up to the value of vertex count.
+	//fin.get(input);
+	//while (input != ':')
+	//{
+	//	fin.get(input);
+	//}
 
 	// Read in the vertex count.
 	//for loading in ASSMIP you will want some way to do this
-	fin >> m_vertexCount;
-
-	/*
+	//fin >> m_vertexCount;
 	
-	ASSMIP STUFF
 	
-	Assimp::Importer importer;
-
-
-
-    const aiScene * scene = importer.ReadFile("untitled.obj", aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
-
-	aiMesh *mesh = scene->mMeshes[0]; 
-
-	for (i = 0; i<m_vertexCount; i++)
+	//ASSMIP STUFF
+	//THIS IS CAUSING ISSUES	->
+	scene = importer.ReadFile(filename, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+	if (!scene)
 	{
-
-	{
-
-	aiVector3D pos = m_model->mVertices[i];
-
-	vertices[i].Pos.x    =  pos.x;
-	vertices[i].Pos.y    =  pos.y;
-	vertices[i].Pos.z    =  pos.z;
+		//return false;
 	}
+	aiMesh *mesh = scene->mMeshes[0];
+	m_vertexCount = mesh->mNumVertices;
 	
-
-	*/
 	// Create the model using the vertex count that was read in.
 	m_model = new ModelType[m_vertexCount];
 	if (!m_model)

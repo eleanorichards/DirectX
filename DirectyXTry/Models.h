@@ -7,6 +7,10 @@
 #include <directxmath.h>
 #include "Texture.h"
 #include <fstream>
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
+
 using namespace std;
 using namespace DirectX;
 
@@ -20,6 +24,10 @@ private:
 		XMFLOAT4 color;		
 		XMFLOAT3 normal;
 		XMFLOAT2 texture;
+	};
+	struct IndexType
+	{
+		XMFLOAT3 position;
 	};
 
 	struct InstanceType
@@ -45,6 +53,8 @@ public:
 	int GetVertexCount();
 	int GetInstanceCount();
 
+	int GetIndexCount();
+
 	ID3D11ShaderResourceView* GetTexture();
 
 private:
@@ -57,9 +67,14 @@ private:
 	void ReleaseModel();
 
 private:
-	ID3D11Buffer *m_vertexBuffer, *m_instanceBuffer;
+	Assimp::Importer importer;
+
+	const aiScene * scene;
+	
+	ID3D11Buffer *m_vertexBuffer, *m_instanceBuffer, *m_indexBuffer;
 	int m_vertexCount;
 	int m_instanceCount;
+	int m_indexCount;
 	Texture* m_Texture;
 	ModelType* m_model;
 };

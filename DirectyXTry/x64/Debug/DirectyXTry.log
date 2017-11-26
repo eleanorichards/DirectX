@@ -1,8 +1,3 @@
-﻿  TextureShader.cpp
-c:\users\elean\source\repos\directyxtry\directyxtry\textureshader.cpp(257): warning C4244: '=': conversion from 'SIZE_T' to 'unsigned long', possible loss of data
-  Graphics.cpp
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  main.cpp
-  System.cpp
+﻿  Models.cpp
+c:\users\elean\source\repos\directyxtry\directyxtry\models.cpp(139): warning C4018: '<': signed/unsigned mismatch
   DirectyXTry.vcxproj -> C:\Users\Elean\source\repos\DirectyXTry\x64\Debug\DirectyXTry.exe
